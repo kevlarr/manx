@@ -1,5 +1,6 @@
 use actix_web::{
     http::Method,
+    middleware,
     server,
     App,
     HttpRequest,
@@ -27,6 +28,7 @@ fn main() {
             .expect("Error connecting to database");
 
         App::with_state(AppState { conn })
+            .middleware(middleware::Logger::default())
             .route("hello", Method::GET, hello)
     };
 
