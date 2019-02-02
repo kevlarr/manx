@@ -1,7 +1,6 @@
 <template>
-  <div class="registration">
-    <h1>Sign Up</h1>
-    <p>All we need from you are a valid email and a decent password.</p>
+  <div class="login">
+    <h1>Sign In</h1>
 
     <form @submit.prevent="onSubmit" class="form">
       <div class="form-group">
@@ -9,7 +8,7 @@
         <input type="email"
           id="new-email"
           class="form-input"
-          v-model="newUser.email"
+          v-model="user.email"
         />
       </div>
 
@@ -18,16 +17,7 @@
         <input type="password"
           id="new-password"
           class="form-input"
-          v-model="newUser.password"
-        />
-      </div>
-
-      <div class="form-group">
-        <input type="password"
-          id="new-password-confirmation"
-          class="form-input"
-          placeholder="Confirm your password"
-          v-model="newUser.passwordConfirmation"
+          v-model="user.password"
         />
       </div>
 
@@ -47,47 +37,41 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Api from '@/lib/api';
 
-interface NewUser {
+interface User {
   email: string;
   password: string;
-  passwordConfirmation: string;
 }
 
 @Component
-export default class HelloWorld extends Vue {
-  newUser: NewUser = {
+export default class Login extends Vue {
+  user: User = {
     email: '',
     password: '',
-    passwordConfirmation: '',
   };
 
   errors: string[] = [];
 
   onSubmit() {
-    const user = this.newUser;
+    const { email, password } = this.user;
     this.errors = [];
 
-    if (!user.email) {
+    if (!email) {
       this.errors.push('Email cannot be blank');
     }
 
-    if (!user.password) {
+    if (!password) {
       this.errors.push('Password cannot be blank');
     }
 
-    if (user.password != user.passwordConfirmation) {
-      this.errors.push('Password confirmation must match');
-    }
-
     if (!this.errors.length) {
-      Api.post('users', { email: user.email, password: user.password })
+      Api.post('login', { email, password })
         .then((resp) => {
-          this.$router.push('login');
+          debugger;
         })
+        .catch((resp) => {
+          debugger;
+        });
     }
   }
 };
 </script>
-
-<style scoped lang="scss">
-</style>
