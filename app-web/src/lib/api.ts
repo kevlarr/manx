@@ -7,13 +7,14 @@
 
 const ROOT = '/api/internal'
 
-interface ApiResponse {
+interface ParsedResponse {
+  _response: Response;
   status: number;
   reason: string;
   body ?: any;
 };
 
-function request(method: string, path: string, data?: {}): Promise<ApiResponse> {
+function request(method: string, path: string, data?: {}): Promise<ParsedResponse> {
   const opts: RequestInit = {
     method: method,
     credentials: 'same-origin',
@@ -34,8 +35,9 @@ function request(method: string, path: string, data?: {}): Promise<ApiResponse> 
       return resp.text();
     })
     .then((text: string) => text ? JSON.parse(text) : {})
-    .then((body) => new Promise<ApiResponse>((resolve, reject) => {
+    .then((body) => new Promise<ParsedResponse>((resolve, reject) => {
       const parsedResponse = {
+        _response: response,
         status: response.status,
         reason: response.statusText,
         body,

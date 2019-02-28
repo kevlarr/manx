@@ -1,14 +1,15 @@
+import './initializers';
 import Vue from 'vue';
+import upperFirst from 'lodash/upperFirst'
+import camelCase from 'lodash/camelCase'
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import upperFirst from 'lodash/upperFirst'
-import camelCase from 'lodash/camelCase'
 
 Vue.config.productionTip = false;
 
 /**
- * Load global components
+ * Globally register `_global` components
  */
 const globals = require.context(
   './components/_global',
@@ -38,7 +39,7 @@ globals.keys().forEach((fileName) => {
 });
 
 /**
- * Create Application
+ * Create app
  */
 new Vue({
   router,
