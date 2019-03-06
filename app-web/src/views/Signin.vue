@@ -36,6 +36,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Api from '@/lib/api';
+import Auth from '@/lib/auth';
 
 interface User {
   email: string;
@@ -66,8 +67,8 @@ export default class Signin extends Vue {
     if (!this.errors.length) {
       Api.post('sessions', { session: { email, password } })
         .then((resp) => {
-          localStorage.setItem('authenticated', 'true');
-          this.$router.push({ name: 'chat' });
+          Auth.signIn(resp);
+          this.$router.push({ name: 'main' });
         })
         .catch((resp) => {
           debugger;

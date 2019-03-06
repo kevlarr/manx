@@ -7,13 +7,14 @@ import { Route, RawLocation } from 'vue-router';
 import { Next } from '@/types';
 import Component from 'vue-class-component';
 import Api from '@/lib/api';
+import Auth from '@/lib/auth';
 
 @Component
 export default class Signout extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
     Api.delete('sessions/1')
       .then(() => {
-        localStorage.setItem('authenticated', 'false');
+        Auth.signOut();
         return next({ name: 'home' });
       })
       .catch(() => next(false));

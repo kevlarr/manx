@@ -46,6 +46,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Api from '@/lib/api';
+import Auth from '@/lib/auth';
 
 interface NewUser {
   email: string;
@@ -60,7 +61,6 @@ export default class Signup extends Vue {
     password: '',
     passwordConfirmation: '',
   };
-
   errors: string[] = [];
 
   onSubmit() {
@@ -82,8 +82,8 @@ export default class Signup extends Vue {
     if (!this.errors.length) {
       Api.post('users', { user: { email: user.email, password: user.password } })
         .then((resp) => {
-          localStorage.setItem('authenticated', 'true');
-          this.$router.push({ name: 'chat' });
+          Auth.signIn(resp);
+          this.$router.push({ name: 'main' });
         })
         .catch((resp) => {
           debugger;
@@ -93,5 +93,5 @@ export default class Signup extends Vue {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 </style>

@@ -3,12 +3,18 @@ defmodule ManxWeb.Api.Internal.SessionController do
 
   def create(conn, %{"session" => %{"email" => email, "password" => pw}}) do
     case Manx.Auth.authenticate(conn, email, pw) do
-      {:ok, succeeded} ->
-        succeeded
-        |> send_resp(204, "")
+      {:ok, conn} ->
+        orgs =
+          conn.assigns.current_user
+          |> Manx.Orgs.Organization.for_user()
+          |> Manx.Repo.all()
 
-      {:error, failed} ->
-        failed
+        conn
+        |> put_status(200)
+        |> render("create.json", orgs: orgs)
+
+      {:error, conn} ->
+        conn
         |> put_status(401)
         |> put_view(ErrView)
         |> render(:"401")

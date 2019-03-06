@@ -4,6 +4,7 @@ import Home from './views/Home.vue';
 import Signup from './views/Signup.vue';
 import Signin from './views/Signin.vue';
 import Signout from './views/Signout.vue';
+import NewOrganization from './views/main/NewOrganization.vue';
 
 Vue.use(Router);
 
@@ -32,9 +33,16 @@ export default new Router({
       component: Signout,
     },
     {
-      path: '/chat',
-      name: 'chat',
-      component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
+      path: '/main',
+      name: 'main',
+      component: () => import(/* webpackChunkName: "main" */ './views/Main.vue'),
+      children: [
+        {
+          path: 'new-organization',
+          name: 'newOrganization',
+          component: NewOrganization,
+        },
+      ],
     },
   ],
 });

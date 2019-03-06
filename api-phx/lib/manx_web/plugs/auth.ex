@@ -20,6 +20,7 @@ defmodule Manx.Auth do
       user ->
         {:error, conn}
       true ->
+        # If no user, then do a dummy check to help mitigate timing attacks
         Comeonin.Argon2.dummy_checkpw()
         {:error, conn}
     end

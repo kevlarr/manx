@@ -10,7 +10,7 @@ defmodule ManxWeb.Api.Internal.UserController do
       {:ok, user} ->
         conn
         |> Manx.Auth.sign_in(user)
-        |> put_status(201)
+        |> put_status(200)
         |> json(%{})
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -28,6 +28,7 @@ defmodule ManxWeb.Api.Internal.UserController do
   end
 
   defp authorize(conn, _opts) do
+    # FIXME - check ID matches
     if conn.assigns.current_user do
       conn
     else

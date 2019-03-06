@@ -11,7 +11,8 @@ will be matched up with static files that comprised the marketing site.
 
 > <sup>1</sup> The primary reason that the application is served on a nested path
 > rather than a subdomain (eg. https://app.xyz.com) is that this frees us up to
-> offer paid, private servers on subdomains (eg. https://some-company.xyz.com)
+> offer paid, private servers on subdomains (eg. https://some-company.xyz.com) that
+> also allow multiple organizations under the same umbrella
 
 The application itself will make calls to https://xyz.com/api, which nginx will
 proxy directly to the underlying back-end.

@@ -1,12 +1,11 @@
 defmodule Manx.Accounts.User do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use ManxWeb, :model
 
   schema "users" do
+    has_many :organization_users, Manx.Orgs.OrganizationUser
     field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string
-
     timestamps()
   end
 
@@ -20,12 +19,12 @@ defmodule Manx.Accounts.User do
     |> hash_password()
   end
 
-  defp hash_password(chset) do
-    case chset do
+  defp hash_password(changeset) do
+    case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pw}} ->
-        put_change(chset, :password_hash, Comeonin.Argon2.hashpwsalt(pw))
+        put_change(changeset, :password_hash, Comeonin.Argon2.hashpwsalt(pw))
       _ ->
-        chset
+        changeset
     end
   end
 end

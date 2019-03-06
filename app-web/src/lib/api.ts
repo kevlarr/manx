@@ -7,7 +7,7 @@
 
 const ROOT = '/api/internal'
 
-interface ParsedResponse {
+export interface ParsedResponse {
   _response: Response;
   status: number;
   reason: string;
