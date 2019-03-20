@@ -1,10 +1,12 @@
-import './initializers';
+// Plugins need to be initialized before instantiating anything
+import './plugins';
+
 import Vue from 'vue';
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
+import router from './lib/router';
+import store from './lib/store';
 import App from './App.vue';
-import router from './router';
-import store from './store';
 
 Vue.config.productionTip = false;
 

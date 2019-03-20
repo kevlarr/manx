@@ -1,5 +1,6 @@
 defmodule Manx.Auth do
   import Plug.Conn
+  import Phoenix.Controller, only: [put_view: 2, render: 2]
 
   alias Manx.Accounts
 
@@ -23,6 +24,18 @@ defmodule Manx.Auth do
         # If no user, then do a dummy check to help mitigate timing attacks
         Comeonin.Argon2.dummy_checkpw()
         {:error, conn}
+    end
+  end
+
+  def ensure_authenticated(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> halt()
+      |> put_status(403)
+      |> put_view(ErrView)
+      |> render(:"403")
     end
   end
 

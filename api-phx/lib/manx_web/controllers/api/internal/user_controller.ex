@@ -3,7 +3,7 @@ defmodule ManxWeb.Api.Internal.UserController do
 
   alias Manx.Accounts
 
-  plug :authorize when action in [:delete]
+  plug :ensure_authenticated when action in [:delete]
 
   def create(conn, %{"user" => user_params}) do
     case Accounts.create_user(user_params) do
@@ -22,21 +22,9 @@ defmodule ManxWeb.Api.Internal.UserController do
   end
 
   def delete(conn, %{"id" => user_id}) do
+    # FIXME - check current user ID matches
     conn
     |> put_status(200)
     |> json(%{hi: user_id})
-  end
-
-  defp authorize(conn, _opts) do
-    # FIXME - check ID matches
-    if conn.assigns.current_user do
-      conn
-    else
-      conn
-      |> halt()
-      |> put_status(403)
-      |> put_view(ErrView)
-      |> render(:"403")
-    end
   end
 end

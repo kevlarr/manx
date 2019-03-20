@@ -1,18 +1,21 @@
-.button {
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 5px 10px;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.form {
-  .form-group {
-  }
-
-  .form-input {
-  }
-
-  .form-label {
-    display: block;
-  }
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
 }
 
+p {
+  margin-top: 0;
+}
+
+body {
+  color: #2c3e50;
+  font-family: Raleway, sans-serif;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -5,7 +5,7 @@
 
 import { ParsedResponse } from '@/lib/api';
 
-const AUTH = 'authenticatedUserData';
+const AUTH = 'authUser';
 
 function isAuthenticated(): boolean {
   return localStorage.getItem(AUTH) !== null;

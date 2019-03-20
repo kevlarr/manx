@@ -31,6 +31,7 @@ defmodule ManxWeb do
       use Phoenix.Controller, namespace: ManxWeb
 
       import Plug.Conn
+      import Manx.Auth, only: [ensure_authenticated: 2]
       import ManxWeb.Gettext
       alias ManxWeb.Router.Helpers, as: Routes
       alias ManxWeb.ErrorView, as: ErrView
@@ -60,6 +61,7 @@ defmodule ManxWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+      import Manx.Auth, only: [ensure_authenticated: 2]
     end
   end
 

@@ -1,5 +1,4 @@
-<template>
-</template>
+<template></template>
 
 <script lang="ts">
 import Vue from 'vue';
@@ -10,7 +9,7 @@ import Api from '@/lib/api';
 import Auth from '@/lib/auth';
 
 @Component
-export default class Signout extends Vue {
+export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
     Api.delete('sessions/1')
       .then(() => {
