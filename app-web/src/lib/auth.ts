@@ -1,28 +1,11 @@
 /**
- * Utilities for handling session management, including interacting
- * with localStorage
+ * Utilities for handling session management
  */
 
-import { ParsedResponse } from '@/lib/api';
-
-const AUTH = 'authUser';
-
 function isAuthenticated(): boolean {
-  return localStorage.getItem(AUTH) !== null;
-}
-
-function signIn({ body }: ParsedResponse) {
-  localStorage.setItem(AUTH, JSON.stringify({
-    organizations: body.organizations || [],
-  }));
-}
-
-function signOut() {
-  localStorage.removeItem(AUTH);
+  return Boolean(document.cookie.replace(/(?:(?:^|.*;\s*)_manx_key\s*\=\s*([^;]*).*$)|^.*$/, '$1'));
 }
 
 export default {
   isAuthenticated,
-  signIn,
-  signOut,
 };

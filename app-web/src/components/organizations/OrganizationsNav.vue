@@ -4,7 +4,7 @@
       <li><router-link :to="{ name: 'newOrganization' }">+ New</router-link></li>
 
       <li v-for="org in orgs">
-        <router-link :to="{ name: 'organizationRoot', params: { orgId: org.short_id } }">
+        <router-link :to="{ name: 'organizationRoot', params: { orgId: org.shortId } }">
           {{ org.title }}
         </router-link>
       </li>
@@ -23,7 +23,7 @@ import Component from 'vue-class-component';
 @Component
 export default class extends Vue {
   get orgs() {
-    return JSON.parse(localStorage.getItem('authUser') || '{}').organizations;
+    return this.$store.getters.organizations;
   }
 }
 </script>
@@ -31,7 +31,7 @@ export default class extends Vue {
 <style scoped lang='scss'>
 @import '@/styles/colors.scss';
 
-nav {
+.OrganizationsNav {
   background: $midBlue;
   color: white;
   display: flex;

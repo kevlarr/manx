@@ -12,10 +12,7 @@ import Auth from '@/lib/auth';
 export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
     Api.delete('sessions/1')
-      .then(() => {
-        Auth.signOut();
-        return next({ name: 'home' });
-      })
+      .then(() => next({ name: 'home' }))
       .catch(() => next(false));
   }
 }

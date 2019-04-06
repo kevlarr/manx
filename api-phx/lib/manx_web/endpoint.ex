@@ -40,6 +40,7 @@ defmodule ManxWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_manx_key",
+    http_only: false,
     signing_salt: "G65MbVc0"
 
   plug ManxWeb.Router

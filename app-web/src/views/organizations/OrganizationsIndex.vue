@@ -3,6 +3,7 @@
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import Store from '@/lib/store';
 import { Route } from 'vue-router';
 import { Next } from '@/types';
 
@@ -13,10 +14,10 @@ export default class extends Vue {
    * Otherwise, just redirects to new form if none are present.
    */
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    const orgs = JSON.parse(localStorage.getItem('authUser') || '{}').organizations;
+    const orgs = Store.getters.organizations;
 
     if (orgs.length > 0) {
-      const shortId = orgs[0].short_id;
+      const { shortId } = orgs[0];
 
       next({ name: 'organizationRoot', params: { orgId: shortId } });
       return;

@@ -1,7 +1,18 @@
 defmodule ManxWeb.Api.Internal.OrganizationController do
   use ManxWeb, :controller
 
-  plug :ensure_authenticated when action in [:create]
+  plug :ensure_authenticated when action in [:index, :create]
+
+  def index(conn, _params) do
+    orgs =
+      conn.assigns.current_user
+      |> Manx.Orgs.Organization.for_user()
+      |> Manx.Repo.all()
+
+    conn
+    |> put_status(200)
+    |> render("index.json", orgs: orgs)
+  end
 
   def create(conn, %{"organization" => org_params, "organization_user" => org_user_params}) do
     user = conn.assigns.current_user

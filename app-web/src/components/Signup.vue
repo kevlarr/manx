@@ -54,13 +54,8 @@ export default class extends Vue {
 
     if (!this.emailErr && !this.passwordErr) {
       Api.post('users', { user: { email: user.email, password: user.password } })
-        .then((resp) => {
-          Auth.signIn(resp);
-          this.$router.push({ name: 'organizations' });
-        })
-        .catch((resp) => {
-          debugger;
-        });
+        .then(resp => this.$emit('authenticated', resp))
+        .catch(err => alert(err));
     }
   }
 };

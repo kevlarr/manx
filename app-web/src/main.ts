@@ -4,9 +4,9 @@ import './plugins';
 import Vue from 'vue';
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
-import router from './lib/router';
-import store from './lib/store';
-import App from './App.vue';
+import router from '@/lib/router';
+import store from '@/lib/store';
+import App from '@/App.vue';
 
 Vue.config.productionTip = false;
 

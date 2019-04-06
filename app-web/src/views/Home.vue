@@ -7,7 +7,7 @@
       <hr/>
 
       <div class="user-form">
-        <component :is="activeComponent"/>
+        <component :is="activeComponent" @authenticated="signIn"/>
       </div>
 
       <p>{{ toggleMsg }}? <router-link :to="linkHref">{{ linkMsg }}</router-link></p>
@@ -20,6 +20,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Signin from '@/components/Signin.vue';
 import Signup from '@/components/Signup.vue';
+import { ParsedResponse } from '@/lib/api';
 
 @Component({
   components: { Signin, Signup },
@@ -43,6 +44,10 @@ export default class extends Vue {
 
   get linkHref() {
     return this.onSignup ? '' : '?signUp=true';
+  }
+
+  signIn(_resp: ParsedResponse) {
+    this.$router.push({ name: 'organizations' });
   }
 }
 </script>

@@ -11,7 +11,7 @@ export interface ParsedResponse {
   _response: Response;
   status: number;
   reason: string;
-  body ?: any;
+  body: object;
 };
 
 function request(method: string, path: string, data?: {}): Promise<ParsedResponse> {
@@ -34,7 +34,10 @@ function request(method: string, path: string, data?: {}): Promise<ParsedRespons
       response = resp;
       return resp.text();
     })
-    .then((text: string) => text ? JSON.parse(text) : {})
+    .then((text: string) => {
+      try   { return JSON.parse(text); }
+      catch { return { text }; }
+    })
     .then((body) => new Promise<ParsedResponse>((resolve, reject) => {
       const parsedResponse = {
         _response: response,

@@ -26,7 +26,7 @@ defmodule ManxWeb.Router do
     pipe_through :api
 
     scope "/internal", Internal do
-      resources "/organizations", OrganizationController, only: [:create, :delete]
+      resources "/organizations", OrganizationController, only: [:index, :create, :delete]
       resources "/sessions", SessionController, only: [:create, :delete]
       resources "/users", UserController, only: [:create, :delete]
     end

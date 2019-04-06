@@ -4,6 +4,10 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
   alias Manx.Orgs.Organization
   alias Manx.Orgs.OrganizationUser
 
+  def render("index.json", %{orgs: orgs}), do: %{
+    organizations: (for org <- orgs, do: org_json(org))
+  }
+
   def render("create.json", %{org: org, org_user: org_user}), do: %{
     organization: org_json(org),
     organization_user: org_user_json(org_user),
