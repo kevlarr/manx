@@ -18,8 +18,7 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
     short_id: short_id,
   }
 
-  def org_user_json(%OrganizationUser{name: name, username: username}), do: %{
+  def org_user_json(%OrganizationUser{name: name}), do: %{
     name: name,
-    username: username,
   }
 end

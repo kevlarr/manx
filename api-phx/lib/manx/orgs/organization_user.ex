@@ -5,7 +5,6 @@ defmodule Manx.Orgs.OrganizationUser do
     belongs_to :user, Manx.Accounts.User
     belongs_to :organization, Manx.Orgs.Organization
     field :name, :string
-    field :username, :string
     timestamps()
   end
 
@@ -14,14 +13,14 @@ defmodule Manx.Orgs.OrganizationUser do
   """
   def changeset(org_user, attrs) do
     org_user
-    |> cast(attrs, [:name, :username])
-    |> validate_required([:name, :username])
+    |> cast(attrs, [:name])
+    |> validate_required([:name])
   end
 
   @doc """
   Changeset for new organization registration. Does not validate
-  uniqueness on org/user or org/username, but those cannot fail
-  when creating org. user for a new organization.
+  uniqueness on org/user, but that cannot fail when creating
+  org. user for a new organization.
   """
   def registration_changeset(user, org, attrs) do
     user

@@ -40,28 +40,24 @@ export default class extends Vue {
   }
 
   onSubmit() {
+    const title = this.title;
+    const userName = this.name;
+
     this.titleErr = '';
     this.nameErr = '';
 
-    if (!this.title) {
+    if (!title) {
       this.titleErr = 'cannot be blank';
     }
 
-    if (!this.name) {
+    if (!userName) {
       this.nameErr = 'cannot be blank';
     }
 
     if (!this.titleErr && !this.nameErr) {
-      Api.post('organizations', {
-        organization: { title: this.title },
-        organization_user: { name: this.name },
-      })
-        .then((resp) => {
-          debugger;
-        })
-        .catch((resp) => {
-          debugger;
-        });
+      this.$store.dispatch('createOrganization', { title, userName })
+        .then(org => this.$router.push({ name: 'organizationRoot', params: { orgId: org.shortId } }))
+        .catch(err => alert(err));
     }
   }
 }
