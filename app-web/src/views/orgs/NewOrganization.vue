@@ -29,7 +29,7 @@ import Component from 'vue-class-component';
 import Api from '@/lib/api';
 
 @Component
-export default class extends Vue {
+export default class NewOrganization extends Vue {
   title: string = '';
   titleErr: string = '';
   name: string = '';
@@ -55,8 +55,8 @@ export default class extends Vue {
     }
 
     if (!this.titleErr && !this.nameErr) {
-      this.$store.dispatch('createOrganization', { title, userName })
-        .then(org => this.$router.push({ name: 'organizationRoot', params: { orgId: org.shortId } }))
+      this.$store.dispatch('organizations/createOrg', { title, userName })
+        .then(org => this.$router.push({ name: 'organizationRoot', params: { org: org.shortId } }))
         .catch(err => alert(err));
     }
   }

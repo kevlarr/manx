@@ -8,24 +8,61 @@ import { NavigationGuard } from 'vue-router';
 type Next = Parameters<NavigationGuard>[2];
 
 /**
- * Organizations
+ * Data models
+ */
+
+interface Org {
+  id: number;
+  shortId: string;
+  title: string;
+}
+
+interface NewOrg {
+  title: string;
+  userName: string;
+}
+
+interface OrgUser {
+  id: number;
+  orgId: string;
+  name: string;
+}
+
+interface Stream {
+  id: number;
+  parentId: number | null;
+  orgId: string;
+  global: boolean;
+  name: string;
+  shortId: string;
+}
+
+/**
+ * State management
  *
  *   The "organization" basically represents a self-contained data store.
- *   While they nest data within themselves, it is an attempt to keep any
+ *   While each nests data within itself, it is an attempt to keep any
  *   cross-contamination to a minimum, and as a singular entity an
  *   organization should itself remain flat and normalized.
  */
 
-interface OrganizationUser {
-  name: string;
+interface OrgUserMap {
+  [id: string]: OrgUser;
 }
 
-interface OrganizationUserMap {
-  [name: string]: OrganizationUser;
+interface StreamMap {
+  [id: string]: Stream;
 }
 
-interface Organization {
-  shortId: string;
-  title: string;
-  users: OrganizationUserMap;
+interface OrgState {
+  org: Org;
+  ownUser: OrgUser;
+  allUsers: OrgUserMap;
+  streams: StreamMap;
+}
+
+// FIXME: Want to store "current OrgState" on here for faster lookup
+// of users, streams, etc.
+interface OrgsState {
+  [id: string]: OrgState;
 }

@@ -4,6 +4,7 @@ defmodule Manx.Orgs.Organization do
 
   alias __MODULE__
   alias Manx.Accounts.User
+  alias Manx.Orgs
   alias Manx.Orgs.OrganizationUser
 
   schema "organizations" do
@@ -19,16 +20,16 @@ defmodule Manx.Orgs.Organization do
   """
   def for_user(%Manx.Accounts.User{id: user_id}) do
     from org in Organization,
-      join: orguser in OrganizationUser,
-      on: orguser.organization_id == org.id,
-      where: orguser.user_id == ^user_id,
-      select: org
+      join: org_user in OrganizationUser,
+      on: org_user.organization_id == org.id,
+      where: org_user.user_id == ^user_id,
+      select: [org, org_user]
   end
 
   @doc """
   Base changeset that allows updating user-editable fields.
   """
-  def changeset(org, attrs \\ %{}) do
+  def changeset(%Organization{} = org, attrs \\ %{}) do
     org
     |> cast(attrs, [:title])
     |> validate_required([:title])
@@ -42,27 +43,6 @@ defmodule Manx.Orgs.Organization do
     %Organization{}
     |> changeset(attrs)
     |> put_change(:creator, user)
-    |> assign_short_id()
-  end
-
-  @doc """
-  Adds a newly-created random short URL-safe ID to the changeset
-  """
-  defp assign_short_id(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true} ->
-        put_change(changeset, :short_id, generate_short_id())
-      _ ->
-        changeset
-    end
-  end
-
-  @doc """
-  Genereates a random, 6-char URL-safe ID
-  """
-  defp generate_short_id() do
-    :crypto.strong_rand_bytes(6)
-    |> Base.url_encode64
-    |> binary_part(0, 6)
+    |> Orgs.assign_short_id()
   end
 end

@@ -4,7 +4,7 @@
       <li><router-link :to="{ name: 'newOrganization' }">+ New</router-link></li>
 
       <li v-for="org in orgs">
-        <router-link :to="{ name: 'organizationRoot', params: { orgId: org.shortId } }">
+        <router-link :to="{ name: 'organizationRoot', params: { org: org.shortId } }">
           {{ org.title }}
         </router-link>
       </li>
@@ -21,9 +21,9 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component
-export default class extends Vue {
+export default class Nav extends Vue {
   get orgs() {
-    return this.$store.getters.organizations;
+    return this.$store.getters['organizations/all'];
   }
 }
 </script>

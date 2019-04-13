@@ -2,8 +2,8 @@
   <div id="OrganizationsView">
     <Nav/>
     <div class="organizations-content">
-      <!-- Assign key so orgId change can re-create component -->
-      <router-view :key="$route.params.orgId"/>
+      <!-- Assign key so org change can re-create component -->
+      <router-view :key="$route.params.org"/>
     </div>
   </div>
 </template>
@@ -12,7 +12,7 @@
 import Vue from 'vue';
 import { Route } from 'vue-router';
 import Component from 'vue-class-component';
-import Nav from '@/components/organizations/OrganizationsNav.vue';
+import Nav from '@/components/organizations/Nav.vue';
 import Store from '@/lib/store';
 import { Next } from '@/types';
 
@@ -23,10 +23,8 @@ import { Next } from '@/types';
 })
 export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    Store.dispatch('getOrganizations')
-      .then(() => {
-        next();
-      })
+    Store.dispatch('organizations/fetchOrgs')
+      .then(() => next())
       .catch(err => {
         alert(err);
         next(false);

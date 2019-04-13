@@ -8,18 +8,18 @@ import { Route } from 'vue-router';
 import { Next } from '@/types';
 
 @Component
-export default class extends Vue {
+export default class OrganizationsIndex extends Vue {
   /**
    * If organizations are present, redirects to the first in the list.
    * Otherwise, just redirects to new form if none are present.
    */
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    const orgs = Store.getters.organizations;
+    const orgs = Store.getters['organizations/all'];
 
     if (orgs.length > 0) {
       const { shortId } = orgs[0];
 
-      next({ name: 'organizationRoot', params: { orgId: shortId } });
+      next({ name: 'organizationRoot', params: { org: shortId } });
       return;
     }
 
