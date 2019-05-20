@@ -3,8 +3,8 @@
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Store from '@/lib/store';
 import { Route } from 'vue-router';
+import Repo from '@/lib/repo';
 import { Next } from '@/types';
 
 @Component
@@ -14,10 +14,10 @@ export default class OrganizationsIndex extends Vue {
    * Otherwise, just redirects to new form if none are present.
    */
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    const orgs = Store.getters['organizations/all'];
+    const orgs = Repo.organizations;
 
     if (orgs.length > 0) {
-      const { shortId } = orgs[0];
+      const { shortId } = orgs[0].organization;
 
       next({ name: 'organizationRoot', params: { org: shortId } });
       return;

@@ -33,7 +33,7 @@ defmodule ManxWeb.Api.Internal.OrganizationController do
   Accepts params for a new organization and orguser, creates models, and
   returns results
   """
-  def create(conn, %{"organization" => org_params, "organization_user" => org_user_params}) do
+  def create(conn, %{"organization" => org_params, "organizationUser" => org_user_params}) do
     user = conn.assigns.current_user
 
     case Manx.Orgs.create_organization(user, org_params, org_user_params) do

@@ -3,18 +3,18 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Route, RawLocation } from 'vue-router';
-import { Next } from '@/types';
 import Component from 'vue-class-component';
+import { Next } from '@/types';
 import Api from '@/lib/api';
-import Store from '@/lib/store';
+import Repo from '@/lib/repo';
 
 @Component
 export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
     Api.delete('sessions/1')
-      .then(() => Store.dispatch('reset'))
+      .then(() => Repo.reset())
       .then(() => next({ name: 'home' }))
-      .catch(err => { alert(err); next(false); });
+      .catch(err => next(false));
   }
 }
 </script>

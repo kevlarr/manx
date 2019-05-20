@@ -3,9 +3,9 @@
     <ul class="organizations">
       <li><router-link :to="{ name: 'newOrganization' }">+ New</router-link></li>
 
-      <li v-for="org in orgs">
-        <router-link :to="{ name: 'organizationRoot', params: { org: org.shortId } }">
-          {{ org.title }}
+      <li v-for="repo in organizations">
+        <router-link :to="{ name: 'organizationRoot', params: { org: repo.organization.shortId } }">
+          {{ repo.organization.title }}
         </router-link>
       </li>
     </ul>
@@ -19,11 +19,15 @@
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import { Observer } from 'mobx-vue';
+import { Organization } from '@/types';
+import Repo, { OrganizationRepo } from '@/lib/repo';
 
+@Observer
 @Component
 export default class Nav extends Vue {
-  get orgs() {
-    return this.$store.getters['organizations/all'];
+  get organizations(): OrganizationRepo[] {
+    return Repo.organizations;
   }
 }
 </script>

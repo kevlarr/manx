@@ -12,7 +12,7 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
     # FIXME: use render_many
     %{
       organizations: (for org <- orgs, do: org_json(org)),
-      organization_users: (for org_user <- org_users, do: org_user_json(org_user)),
+      organizationUsers: (for org_user <- org_users, do: org_user_json(org_user)),
       streams: (for stream <- streams, do: stream_json(stream)),
     }
   end
@@ -22,7 +22,7 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
   """
   def render("create.json", %{org: org, org_user: org_user, stream: stream}), do: %{
     organization: org_json(org),
-    organization_user: org_user_json(org_user),
+    organizationUser: org_user_json(org_user),
     stream: stream_json(stream),
   }
 
@@ -31,9 +31,9 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
   """
   def org_json(%Organization{} = org), do: %{
     id: org.id,
-    creator_id: org.creator_id,
+    creatorId: org.creator_id,
     title: org.title,
-    short_id: org.short_id,
+    shortId: org.short_id,
   }
 
   @doc """
@@ -41,7 +41,7 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
   """
   def org_user_json(%OrganizationUser{} = org_user), do: %{
     id: org_user.id,
-    organization_id: org_user.organization_id,
+    organizationId: org_user.organization_id,
     name: org_user.name,
   }
 
@@ -50,10 +50,10 @@ defmodule ManxWeb.Api.Internal.OrganizationView do
   """
   def stream_json(%Stream{} = stream), do: %{
     id: stream.id,
-    organization_id: stream.organization_id,
-    parent_id: stream.parent_id,
+    organizationId: stream.organization_id,
+    parentId: stream.parent_id,
     global: stream.global,
     name: stream.name,
-    short_id: stream.short_id,
+    shortId: stream.short_id,
   }
 end

@@ -1,13 +1,14 @@
 <template>
-  <div class="TextInput">
+  <div class="TextArea">
     <label v-if="label" :for="id" :class="{ isFocused, hasError }">{{ label }} {{ errMsg }}</label>
-    <input type="text"
+    <textarea
       v-bind="{ autofocus, disabled, id, maxlength, minlength, name, pattern, placeholder, value }"
       :class="[classNames, { isFocused, hasError }]"
       @input="$emit('input', $event.target.value)"
-      @focus="setActive"
-      @blur="setBlur"
-    />
+      @focus="focused = true"
+      @blur="focused = false"
+      @keydown="keydown"
+    /></textarea>
   </div>
 </template>
 
@@ -34,17 +35,30 @@ import Component from 'vue-class-component';
   },
 })
 export default class extends Vue {
-  focused: Boolean = false;
+  focused: boolean = false;
 
   get isFocused() { return this.focused; }
   get hasError() { return !!this.$props.errMsg; }
 
-  setActive() {
-    this.focused = true;
+  keydown(event: KeyboardEvent) {
+    const keyEvent = this.keyEvent(event);
+
+    if (keyEvent) {
+      event.preventDefault();
+      event.stopPropagation;
+      (<HTMLTextAreaElement>event.target)!.blur();
+
+      this.focused = false;
+      this.$emit(keyEvent);
+    }
   }
 
-  setBlur() {
-    this.focused = false;
+  keyEvent(event: KeyboardEvent): string | null {
+    switch (true) {
+      case event.key === 'Escape': return 'escape';
+      case event.shiftKey && event.key === 'Enter': return 'shift-enter';
+      default: return null;
+    }
   }
 };
 </script>
@@ -52,8 +66,7 @@ export default class extends Vue {
 <style scoped lang='scss'>
 @import '@/styles/colors.scss';
 
-.TextInput {
-  margin-bottom: 10px;
+.TextArea {
   text-align: left;
 
   label {
@@ -80,16 +93,15 @@ export default class extends Vue {
     }
   }
 
-  input {
+  textarea {
     border: 1px solid #ccc;
     border-radius: 3px;
     display: block;
     font-size: 16px;
     padding: 10px 10px 5px 10px;
+    resize: none;
     transition: border-color 0.25s;
     width: 100%;
-
-    // box-shadow: 0px 0px 30px 15px rgba($midBlue, .1);
 
     &.isFocused {
       border-color: $lightBlue;

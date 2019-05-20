@@ -3,8 +3,7 @@ defmodule Manx.Repo.Migrations.CreateStreams do
 
   def change do
     create table(:streams) do
-      # Deleting the parent user should NOT remove the record
-      add(:creator_id, references(:users, on_delete: :nilify_all))
+      add(:creator_id, references(:organization_users), null: false)
 
       # Deleting a parent stream (if present) should just make this top-level
       add(:parent_id, references(:streams, on_delete: :nilify_all))

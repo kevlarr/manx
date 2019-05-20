@@ -12,8 +12,8 @@
 import Vue from 'vue';
 import { Route } from 'vue-router';
 import Component from 'vue-class-component';
+import Repo from '@/lib/repo';
 import Nav from '@/components/organizations/Nav.vue';
-import Store from '@/lib/store';
 import { Next } from '@/types';
 
 @Component({
@@ -23,12 +23,9 @@ import { Next } from '@/types';
 })
 export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    Store.dispatch('organizations/fetchOrgs')
+    Repo.loadOrganizations()
       .then(() => next())
-      .catch(err => {
-        alert(err);
-        next(false);
-      });
+      .catch(() => next(false));
   }
 }
 </script>

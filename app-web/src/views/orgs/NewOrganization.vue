@@ -27,6 +27,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Api from '@/lib/api';
+import Repo from '@/lib/repo';
 
 @Component
 export default class NewOrganization extends Vue {
@@ -55,9 +56,12 @@ export default class NewOrganization extends Vue {
     }
 
     if (!this.titleErr && !this.nameErr) {
-      this.$store.dispatch('organizations/createOrg', { title, userName })
-        .then(org => this.$router.push({ name: 'organizationRoot', params: { org: org.shortId } }))
-        .catch(err => alert(err));
+      Repo.createOrganization({ title, userName })
+        .then(repo => this.$router.push({
+          name: 'organizationRoot',
+          params: { org: repo.organization.shortId },
+        }))
+        .catch(err => { debugger; alert(err); });
     }
   }
 }

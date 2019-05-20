@@ -46,7 +46,7 @@ export default class extends Vue {
     if (!this.emailErr && !this.passwordErr) {
       Api.post('sessions', { session: { email, password } })
         .then(resp => this.$emit('authenticated', resp))
-        .catch(err => alert(err));
+        .catch(err => { debugger; alert(err); });
     }
   }
 };

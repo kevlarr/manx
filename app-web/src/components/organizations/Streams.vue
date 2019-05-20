@@ -12,22 +12,18 @@
 
 <script lang='ts'>
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
 import Component from 'vue-class-component';
 import { Stream } from '@/types';
+import Repo from '@/lib/repo';
 
-@Component({
-  computed: {
-    ...mapGetters('organizations', ['streamsFor'])
-  }
-})
+
+@Component
 export default class Streams extends Vue {
-  streamsFor!: (shortId: string) => Stream[];
-
   get streams() {
     const shortId = this.$route.params.org;
+    const streams = Repo.getOrganization(shortId)!.streams.map(repo => repo.stream);
 
-    return this.streamsFor(shortId);
+    return streams;
   }
 
   streamLink(stream: Stream): object {

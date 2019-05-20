@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { NavigationGuard } from 'vue-router';
+import Repo from '@/lib/repo';
 
 /**
  * Vue
@@ -11,58 +12,54 @@ type Next = Parameters<NavigationGuard>[2];
  * Data models
  */
 
-interface Org {
+interface Organization {
   id: number;
+  creatorId: number;
   shortId: string;
   title: string;
 }
 
-interface NewOrg {
+interface NewOrganization {
   title: string;
   userName: string;
 }
 
-interface OrgUser {
+interface OrganizationUser {
   id: number;
-  orgId: string;
+  organizationId: number;
   name: string;
 }
 
 interface Stream {
   id: number;
   parentId: number | null;
-  orgId: string;
+  organizationId: number;
   global: boolean;
   name: string;
   shortId: string;
 }
 
-/**
- * State management
- *
- *   The "organization" basically represents a self-contained data store.
- *   While each nests data within itself, it is an attempt to keep any
- *   cross-contamination to a minimum, and as a singular entity an
- *   organization should itself remain flat and normalized.
- */
-
-interface OrgUserMap {
-  [id: string]: OrgUser;
+interface NewStream {
+  organizationId: string;
+  name: string;
 }
 
-interface StreamMap {
-  [id: string]: Stream;
+interface Topic {
+  id: number;
+  streamId: number;
+  raw: string;
+  rendered: string;
 }
 
-interface OrgState {
-  org: Org;
-  ownUser: OrgUser;
-  allUsers: OrgUserMap;
-  streams: StreamMap;
+interface NewTopic {
+  streamId: number;
+  raw: string;
 }
 
-// FIXME: Want to store "current OrgState" on here for faster lookup
-// of users, streams, etc.
-interface OrgsState {
-  [id: string]: OrgState;
+interface Comment {
+  // TODO
+}
+
+interface NewComment {
+  // TODO
 }

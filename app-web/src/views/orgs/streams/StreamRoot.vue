@@ -1,17 +1,18 @@
  <template>
-  <h1>Stream!</h1>
+   <router-view :key="$route.params.stream"/>
 </template>
 
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Store from '@/lib/store';
 import { Route } from 'vue-router';
 import { Next } from '@/types';
 import { slugerize } from '@/lib/helpers';
+import Repo from '@/lib/repo';
+
 
 const findStream = (org: string, stream: string) =>
-  Store.getters['organizations/streamByShortId'](org, stream);
+  Repo.getOrganization(org)!.getStream(stream)!.stream;
 
 const verifyStream = (to: Route, next: Next) =>
   findStream(to.params.org, to.params.stream)
@@ -19,11 +20,16 @@ const verifyStream = (to: Route, next: Next) =>
     : redirectToGlobal(to, next);
 
 const redirectToGlobal = (to: Route, next: Next) => {
-  const global = Store.getters['organizations/globalStream'](to.params.org);
+  const global = Repo
+    .getOrganization(to.params.org)!
+    .getGlobalStream()!
+    .stream;
+
   const params = { ...to.params, stream: global.shortId };
 
   next({ name: 'stream', params });
 }
+
 
 @Component
 export default class Stream extends Vue {
@@ -47,6 +53,7 @@ export default class Stream extends Vue {
    * Re-slugerizes the stream name and updates route to child path
    * if it's the stream root
    */
+
   created() {
     console.info('StreamRoot:created');
 

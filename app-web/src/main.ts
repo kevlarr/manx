@@ -5,7 +5,6 @@ import Vue from 'vue';
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
 import router from '@/lib/router';
-import store from '@/lib/store';
 import App from '@/App.vue';
 
 Vue.config.productionTip = false;
@@ -45,6 +44,5 @@ globals.keys().forEach((fileName) => {
  */
 new Vue({
   router,
-  store,
   render: h => h(App),
 }).$mount('#app');

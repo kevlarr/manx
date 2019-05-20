@@ -1,6 +1,11 @@
 defmodule ManxWeb.ErrorView do
   use ManxWeb, :view
 
+  # FIXME
+  #def render("403.json"), do: %{
+    #error: "Unauthorized",
+  #}
+
   def render("422.json", %{changeset: changeset}), do: %{
     errors: Ecto.Changeset.traverse_errors(changeset, &translate_error/1),
   }

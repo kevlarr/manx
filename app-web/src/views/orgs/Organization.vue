@@ -10,17 +10,19 @@
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Store from '@/lib/store';
 import Streams from '@/components/organizations/Streams.vue';
 import { Route } from 'vue-router';
 import { Next } from '@/types';
+import Repo from '@/lib/repo';
 
-const findGlobal = (shortId: string) => Store
-  .getters['organizations/globalStream'](shortId);
 
 const toStreamIfRoot = (to: Route, next: Next) => {
   if (to.name === 'organization') {
-    const global = findGlobal(to.params.org);
+    const global = Repo
+      .getOrganization(to.params.org)!
+      .getGlobalStream()!
+      .stream;
+
     const params = { ...to.params, stream: global.shortId };
 
     console.info('\tRedirecting to stream root');

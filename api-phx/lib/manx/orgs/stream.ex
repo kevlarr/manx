@@ -11,7 +11,7 @@ defmodule Manx.Orgs.Stream do
   alias Manx.Orgs.StreamUser
 
   schema "streams" do
-    belongs_to :creator, User
+    belongs_to :creator, OrganizationUser
     belongs_to :organization, Organization
     belongs_to :parent, Stream
     field :global, :boolean
@@ -47,7 +47,7 @@ defmodule Manx.Orgs.Stream do
   @doc """
   Sets up the base, global stream for an organization upon org. creation
   """
-  def registration_changeset(%User{} = creator, %Organization{} = org, attrs) do
+  def registration_changeset(%OrganizationUser{} = creator, %Organization{} = org, attrs) do
     %Stream{}
     |> changeset(attrs)
     |> put_change(:creator, creator)

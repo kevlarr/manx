@@ -27,8 +27,8 @@ defmodule Manx.Orgs do
       |> OrganizationUser.registration_changeset(org, org_user_attrs)
       |> repo.insert()
     end)
-    |> Multi.run(:stream, fn repo, %{org: org} ->
-      user
+    |> Multi.run(:stream, fn repo, %{org: org, org_user: org_user} ->
+      org_user
       |> Stream.registration_changeset(org, %{name: org.title})
       |> repo.insert()
     end)

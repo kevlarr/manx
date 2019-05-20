@@ -3,17 +3,16 @@
 <script lang='ts'>
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Store from '@/lib/store';
 import { Route } from 'vue-router';
-import { Next, Org } from '@/types';
+import Repo from '@/lib/repo';
+import { Next } from '@/types';
 import { slugerize } from '@/lib/helpers';
 
-const findOrg = (shortId: string) => Store
-  .getters['organizations/byShortId'](shortId);
 
-const verifyOrg = (shortId: string, next: Next) => findOrg(shortId)
+const verifyOrg = (shortId: string, next: Next) => Repo.getOrganization(shortId)
   ? next()
   : next({ name: 'organizations' });
+
 
 @Component
 export default class OrganizationRoot extends Vue {
@@ -45,7 +44,7 @@ export default class OrganizationRoot extends Vue {
     console.info('OrganizationRoot:created');
 
     const shortId = this.$route.params.org;
-    const org = findOrg(shortId);
+    const org = Repo.getOrganization(shortId)!.organization;
     const newTitle = slugerize(org.title);
 
     if (newTitle === this.$route.params.orgTitle) { return; }
