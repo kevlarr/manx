@@ -1,53 +1,62 @@
-use actix_web::{
+use actix_web::{App, server,
     http::Method,
-    middleware,
-    server,
-    App,
-    HttpRequest,
-    HttpResponse
+    middleware::{Logger,
+        session::{SessionStorage, CookieSessionBackend},
+    },
 };
 use diesel::{pg::PgConnection, prelude::*};
 use dotenv::dotenv;
 use std::env;
 
-struct AppState {
-    conn: PgConnection,
-}
+use manx::{AppState,
+    handlers::{self, internal},
+};
 
-type Request = HttpRequest<AppState>;
-type Response = HttpResponse;
+fn create() -> App<AppState> {
+    let protoc = env::var("PROTOCOL").unwrap_or_else(|_| "https".to_string());
+    let db_url = env::var("DATABASE_URL").expect("Must set DATABASE_URL");
+    let domain = env::var("DOMAIN").expect("Must set DOMAIN");
+    let secret = env::var("SECRET_KEY").expect("Must set SECRET_KEY");
+
+    let conn = PgConnection::establish(&db_url).expect("Error connecting to database");
+    let state = AppState { conn, secret_key: secret.clone() };
+
+    let session_storage = SessionStorage::new(
+        CookieSessionBackend::private(secret.as_bytes())
+            .name("manx")
+            .domain(domain)
+            .secure(&protoc == "https")
+            .http_only(false)
+    );
+
+    App::with_state(state)
+        .middleware(Logger::default())
+        .middleware(session_storage)
+        .prefix("api")
+        .route("check", Method::GET, handlers::check)
+        .scope("internal", |internal| internal
+            .resource("session", |r| {
+                r.method(Method::POST).with(internal::session::create);
+                r.method(Method::DELETE).with(internal::session::delete);
+            })
+            .nested("users", |users| users
+                .resource("", |r| {
+                    r.method(Method::POST).with(internal::users::create);
+                })
+            )
+        )
+}
 
 fn main() {
     dotenv().ok();
 
-    let database_url = env::var("DATABASE_URL")
-        .expect("Must set DATABASE_URL");
+    std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
 
-    let create_app = move || {
-        let conn = PgConnection::establish(&database_url)
-            .expect("Error connecting to database");
-
-        App::with_state(AppState { conn })
-            .middleware(middleware::Logger::default())
-            .route("hello", Method::GET, hello)
-    };
-
-    let port = env::var("PORT").unwrap_or("1337".to_string());
+    let port = env::var("PORT").unwrap_or_else(|_| "1337".to_string());
     let addr = format!("127.0.0.1:{}", port);
+
     println!("Now listening on {}", addr);
 
-    server::new(create_app)
-        .bind(addr)
-        .unwrap()
-        .run();
-}
-
-fn hello(_req: Request) -> Response {
-    Response::Ok().body("
-        <!doctype html>
-        <html>
-            <head><title>Hello, Manx!</title></head>
-            <body><h1>Hello, Manx!</h1></body>
-        </html>
-    ")
+    server::new(create).bind(addr).unwrap().run();
 }

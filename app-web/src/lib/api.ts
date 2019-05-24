@@ -29,6 +29,7 @@ function request(method: string, path: string, data?: {}): Promise<ParsedRespons
 
   let response: Response;
 
+  // TODO: make this async function?
   return fetch(`${ROOT}/${path}`, opts)
     .then((resp) => {
       response = resp;
