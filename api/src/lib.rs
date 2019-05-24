@@ -9,8 +9,9 @@ use diesel::pg::PgConnection;
 pub mod encryption;
 pub mod handlers;
 pub mod models;
-pub mod schema;
 pub mod store;
+
+mod schema;
 
 pub struct AppState {
     pub conn: PgConnection,

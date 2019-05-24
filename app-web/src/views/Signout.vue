@@ -11,10 +11,13 @@ import Repo from '@/lib/repo';
 @Component
 export default class extends Vue {
   beforeRouteEnter(to: Route, from: Route, next: Next) {
-    Api.delete('sessions/1')
+    Api.delete('session')
       .then(() => Repo.reset())
       .then(() => next({ name: 'home' }))
-      .catch(err => next(false));
+      .catch(err => {
+        alert(JSON.stringify(err));
+        next(false);
+      });
   }
 }
 </script>
