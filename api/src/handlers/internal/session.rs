@@ -36,6 +36,6 @@ pub fn create((req, params): (Request, Json<PostParams>)) -> Response {
 }
 
 pub fn delete(req: Request) -> Response {
-    req.session().remove("user_id");
+    req.session().clear();
     Response::Ok().finish()
 }

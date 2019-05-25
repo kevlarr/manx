@@ -3,7 +3,8 @@
  */
 
 function isAuthenticated(): boolean {
-  return Boolean(document.cookie.replace(/(?:(?:^|.*;\s*)_manx_key\s*\=\s*([^;]*).*$)|^.*$/, '$1'));
+  const cookie = document.cookie.replace(/(?:(?:^|.*;\s*)manx\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+  return !!cookie && cookie.includes('user_id');
 }
 
 export default {

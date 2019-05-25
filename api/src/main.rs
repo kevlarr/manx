@@ -1,16 +1,14 @@
-use actix_web::{App, server,
-    http::Method,
-    middleware::{Logger,
-        session::{SessionStorage, CookieSessionBackend},
-    },
-};
-use diesel::{pg::PgConnection, prelude::*};
+use actix_web::{App, server};
+use actix_web::http::Method;
+use actix_web::middleware::Logger;
+use actix_web::middleware::session::{SessionStorage, CookieSessionBackend};
+use diesel::pg::PgConnection;
+use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
 
-use manx::{AppState,
-    handlers::{self, internal},
-};
+use manx::AppState;
+use manx::handlers::{self, internal};
 
 fn create() -> App<AppState> {
     let protoc = env::var("PROTOCOL").unwrap_or_else(|_| "https".to_string());
@@ -22,7 +20,7 @@ fn create() -> App<AppState> {
     let state = AppState { conn, secret_key: secret.clone() };
 
     let session_storage = SessionStorage::new(
-        CookieSessionBackend::private(secret.as_bytes())
+        CookieSessionBackend::signed(secret.as_bytes())
             .name("manx")
             .domain(domain)
             .secure(&protoc == "https")
