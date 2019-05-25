@@ -8,7 +8,35 @@ use dotenv::dotenv;
 use std::env;
 
 use manx::AppState;
-use manx::handlers::{self, internal};
+use manx::handlers::check as health_check;
+use manx::handlers::internal::{
+    organizations::{
+        list as list_organizations,
+        create as create_organization,
+        delete as delete_organization,
+    },
+    session::{
+        create as create_session,
+        delete as delete_session,
+    },
+    streams::{
+        list as list_streams,
+        create as create_stream,
+        update as update_stream,
+    },
+    topics::{
+        create as create_topic,
+    },
+    users::{
+        create as create_user,
+    },
+};
+
+fn get() -> Method { Method::GET }
+fn post() -> Method { Method::GET }
+fn patch() -> Method { Method::PATCH }
+fn delete() -> Method { Method::GET }
+
 
 fn create() -> App<AppState> {
     let protoc = env::var("PROTOCOL").unwrap_or_else(|_| "https".to_string());
@@ -31,15 +59,40 @@ fn create() -> App<AppState> {
         .middleware(Logger::default())
         .middleware(session_storage)
         .prefix("api")
-        .route("check", Method::GET, handlers::check)
-        .scope("internal", |internal| internal
+        .route("check", get(), health_check)
+        .scope("internal", |api| api
+            .nested("organizations", |orgs| orgs
+                .resource("", |r| {
+                    r.method(get()).with(list_organizations);
+                    r.method(post()).with(create_organization);
+                })
+                .nested("{organization}", |org| org
+                    .resource("", |r| {
+                        r.method(delete()).with(delete_organization);
+                    })
+                    .resource("streams", |r| {
+                        r.method(get()).with(list_streams);
+                        r.method(post()).with(create_stream);
+                    })
+                )
+            )
             .resource("session", |r| {
-                r.method(Method::POST).with(internal::session::create);
-                r.method(Method::DELETE).with(internal::session::delete);
+                r.method(post()).with(create_session);
+                r.method(delete()).with(delete_session);
             })
+            .nested("streams", |streams| streams
+                .nested("{stream}", |stream| stream
+                    .resource("", |r| {
+                        r.method(patch()).with(update_stream);
+                    })
+                    .resource("topics", |r| {
+                        r.method(post()).with(create_topic);
+                    })
+                )
+            )
             .nested("users", |users| users
                 .resource("", |r| {
-                    r.method(Method::POST).with(internal::users::create);
+                    r.method(post()).with(create_user);
                 })
             )
         )
