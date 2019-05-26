@@ -9,7 +9,7 @@ use super::schema::{
 };
 
 
-#[derive(Debug, Queryable, Serialize)]
+#[derive(Debug, Identifiable, Queryable, Serialize)]
 pub struct User {
     pub id: i32,
     #[serde(skip_serializing)]
@@ -27,13 +27,14 @@ pub struct NewUser {
     pub created: DateTime<Utc>,
 }
 
-#[derive(Debug, Queryable, Serialize)]
+#[derive(Associations, Debug, Identifiable, Queryable, Serialize)]
+#[belongs_to(User)]
 pub struct Organization {
     pub id: i32,
     pub created: DateTime<Utc>,
     pub title: String,
     pub uri_key: String,
-    pub user_id: i32,
+    pub user_id: Option<i32>,
 }
 
 #[derive(Insertable)]
@@ -45,12 +46,14 @@ pub struct NewOrganization {
     pub user_id: i32,
 }
 
-#[derive(Debug, Queryable, Serialize)]
+#[derive(Associations, Debug, Identifiable, Queryable, Serialize)]
+#[belongs_to(User)]
+#[belongs_to(Organization)]
 pub struct OrganizationUser {
     pub id: i32,
     pub created: DateTime<Utc>,
     pub name: String,
-    pub user_id: i32,
+    pub user_id: Option<i32>,
     pub organization_id: i32,
 }
 

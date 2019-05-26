@@ -1,7 +1,5 @@
-use actix_web::{Json,
-    middleware::session::RequestSession,
-};
-use serde_json::json;
+use actix_web::Json;
+use actix_web::middleware::session::RequestSession;
 
 use crate::{Request, Response, encryption, store::users};
 
@@ -15,7 +13,7 @@ pub fn create((req, params): (Request, Json<PostParams>)) -> Response {
     let secret = &req.state().secret_key;
 
     match users::find_by_email(&req.state().conn, &params.email) {
-        Some(u) => {
+        Ok(u) => {
             match encryption::verify(secret, &u.password, &params.password) {
                 Ok(true) => return match req.session().set("user_id", &u.id) {
                     // TODO get models
@@ -26,7 +24,7 @@ pub fn create((req, params): (Request, Json<PostParams>)) -> Response {
                 Err(e) => return Response::InternalServerError().body(format!("{}", e)),
             }
         },
-        None => {
+        Err(_) => {
             // Hash the password to help prevent timing attacks
             let _ = encryption::hash(secret, &params.password);
         },

@@ -13,16 +13,15 @@ use manx::handlers::internal::{
     organizations::{
         list as list_organizations,
         create as create_organization,
-        delete as delete_organization,
     },
     session::{
         create as create_session,
         delete as delete_session,
     },
     streams::{
-        list as list_streams,
         create as create_stream,
         update as update_stream,
+        delete as delete_stream,
     },
     topics::{
         create as create_topic,
@@ -67,11 +66,7 @@ fn create() -> App<AppState> {
                     r.method(post()).with(create_organization);
                 })
                 .nested("{organization}", |org| org
-                    .resource("", |r| {
-                        r.method(delete()).with(delete_organization);
-                    })
                     .resource("streams", |r| {
-                        r.method(get()).with(list_streams);
                         r.method(post()).with(create_stream);
                     })
                 )
@@ -84,6 +79,7 @@ fn create() -> App<AppState> {
                 .nested("{stream}", |stream| stream
                     .resource("", |r| {
                         r.method(patch()).with(update_stream);
+                        r.method(delete()).with(delete_stream);
                     })
                     .resource("topics", |r| {
                         r.method(post()).with(create_topic);

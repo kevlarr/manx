@@ -7,6 +7,10 @@ impl StoreError {
     pub fn new(msg: String) -> StoreError {
         StoreError(msg)
     }
+
+    pub fn from_err<E: error::Error>(e: E) -> StoreError {
+        StoreError::new(format!("{}", e))
+    }
 }
 
 impl fmt::Display for StoreError {

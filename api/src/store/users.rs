@@ -4,9 +4,7 @@ use diesel::pg::PgConnection;
 
 use crate::schema;
 use crate::models::{User, NewUser};
-use super::StoreError;
-
-type StoreResult<T> = std::result::Result<T, StoreError>;
+use super::{StoreResult, StoreError};
 
 pub fn new(email: String, password: String) -> NewUser {
     NewUser { created: Utc::now(), email, password }
@@ -19,8 +17,18 @@ pub fn create(conn: &PgConnection, new_user: &NewUser) -> StoreResult<User> {
         .map_err(|e| StoreError::new(format!("{}", e)))
 }
 
-pub fn find_by_email(conn: &PgConnection, email: &str) -> Option<User> {
+pub fn find(conn: &PgConnection, user_id: i32) -> StoreResult<User> {
+    schema::users::dsl::users
+        .find(user_id)
+        .get_result(conn)
+        .map_err(|e| StoreError::new(format!("{}", e)))
+}
+
+pub fn find_by_email(conn: &PgConnection, email: &str) -> StoreResult<User> {
     use schema::users::dsl::{users, email as email_};
 
-    users.filter(email_.eq(email)).first(conn).ok()
+    users
+        .filter(email_.eq(email))
+        .first(conn)
+        .map_err(|e| StoreError::new(format!("{}", e)))
 }
