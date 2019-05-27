@@ -31,12 +31,6 @@ use manx::handlers::internal::{
     },
 };
 
-fn get() -> Method { Method::GET }
-fn post() -> Method { Method::GET }
-fn patch() -> Method { Method::PATCH }
-fn delete() -> Method { Method::GET }
-
-
 fn create() -> App<AppState> {
     let protoc = env::var("PROTOCOL").unwrap_or_else(|_| "https".to_string());
     let db_url = env::var("DATABASE_URL").expect("Must set DATABASE_URL");
@@ -58,37 +52,37 @@ fn create() -> App<AppState> {
         .middleware(Logger::default())
         .middleware(session_storage)
         .prefix("api")
-        .route("check", get(), health_check)
+        .route("check", Method::GET, health_check)
         .scope("internal", |api| api
             .nested("organizations", |orgs| orgs
                 .resource("", |r| {
-                    r.method(get()).with(list_organizations);
-                    r.method(post()).with(create_organization);
+                    r.method(Method::GET).with(list_organizations);
+                    r.method(Method::POST).with(create_organization);
                 })
                 .nested("{organization}", |org| org
                     .resource("streams", |r| {
-                        r.method(post()).with(create_stream);
+                        r.method(Method::POST).with(create_stream);
                     })
                 )
             )
             .resource("session", |r| {
-                r.method(post()).with(create_session);
-                r.method(delete()).with(delete_session);
+                r.method(Method::POST).with(create_session);
+                r.method(Method::DELETE).with(delete_session);
             })
             .nested("streams", |streams| streams
                 .nested("{stream}", |stream| stream
                     .resource("", |r| {
-                        r.method(patch()).with(update_stream);
-                        r.method(delete()).with(delete_stream);
+                        r.method(Method::PATCH).with(update_stream);
+                        r.method(Method::DELETE).with(delete_stream);
                     })
                     .resource("topics", |r| {
-                        r.method(post()).with(create_topic);
+                        r.method(Method::POST).with(create_topic);
                     })
                 )
             )
             .nested("users", |users| users
                 .resource("", |r| {
-                    r.method(post()).with(create_user);
+                    r.method(Method::POST).with(create_user);
                 })
             )
         )

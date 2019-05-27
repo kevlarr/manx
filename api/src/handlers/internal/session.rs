@@ -1,7 +1,10 @@
 use actix_web::Json;
 use actix_web::middleware::session::RequestSession;
 
-use crate::{Request, Response, encryption, store::users};
+use crate::{ApiResult, Request, Response};
+use crate::encryption;
+use crate::error::ApiError;
+use crate::store::users;
 
 #[derive(Deserialize)]
 pub struct PostParams {
@@ -9,28 +12,26 @@ pub struct PostParams {
     password: String,
 }
 
-pub fn create((req, params): (Request, Json<PostParams>)) -> Response {
+pub fn create((req, params): (Request, Json<PostParams>)) -> ApiResult<Response> {
     let secret = &req.state().secret_key;
 
-    match users::find_by_email(&req.state().conn, &params.email) {
-        Ok(u) => {
-            match encryption::verify(secret, &u.password, &params.password) {
-                Ok(true) => return match req.session().set("user_id", &u.id) {
-                    // TODO get models
-                    Ok(_) => Response::Ok().finish(),
-                    Err(e) => Response::InternalServerError().body(format!("{}", e)),
-                },
-                Ok(_) => (), // Fall through to unauthorizedc
-                Err(e) => return Response::InternalServerError().body(format!("{}", e)),
-            }
-        },
-        Err(_) => {
+    let user = match users::find_by_email(&req.state().conn, &params.email)? {
+        Some(u) => u,
+        None => {
             // Hash the password to help prevent timing attacks
             let _ = encryption::hash(secret, &params.password);
+            return Err(ApiError::Unauthorized);
         },
+    };
+
+    if !encryption::verify(secret, &user.password, &params.password)? {
+        return Err(ApiError::Unauthorized);
     }
 
-    Response::Unauthorized().finish()
+    req.session()
+        .set("user_id", &user.id)
+        .map(|_| Response::Ok().finish())
+        .map_err(ApiError::from)
 }
 
 pub fn delete(req: Request) -> Response {

@@ -7,6 +7,8 @@ use actix_web::{HttpRequest, HttpResponse};
 use diesel::pg::PgConnection;
 
 pub mod encryption;
+pub mod error;
+pub mod extractors;
 pub mod handlers;
 pub mod models;
 pub mod store;
@@ -20,3 +22,4 @@ pub struct AppState {
 
 pub type Request = HttpRequest<AppState>;
 pub type Response = HttpResponse;
+pub type ApiResult<T> = Result<T, error::ApiError>;
