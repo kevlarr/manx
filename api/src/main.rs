@@ -10,13 +10,16 @@ use std::env;
 use manx::AppState;
 use manx::handlers::check as health_check;
 use manx::handlers::internal::{
-    organizations::{
-        list as list_organizations,
-        create as create_organization,
+    users::{
+        create as create_user,
     },
     session::{
         create as create_session,
         delete as delete_session,
+    },
+    teams::{
+        list as list_teams,
+        create as create_team,
     },
     streams::{
         create as create_stream,
@@ -26,8 +29,8 @@ use manx::handlers::internal::{
     topics::{
         create as create_topic,
     },
-    users::{
-        create as create_user,
+    comments::{
+        create as create_comment,
     },
 };
 
@@ -54,12 +57,12 @@ fn create() -> App<AppState> {
         .prefix("api")
         .route("check", Method::GET, health_check)
         .scope("internal", |api| api
-            .nested("organizations", |orgs| orgs
+            .nested("teams", |teams| teams
                 .resource("", |r| {
-                    r.method(Method::GET).with(list_organizations);
-                    r.method(Method::POST).with(create_organization);
+                    r.method(Method::GET).with(list_teams);
+                    r.method(Method::POST).with(create_team);
                 })
-                .nested("{organization}", |org| org
+                .nested("{team}", |team| team
                     .resource("streams", |r| {
                         r.method(Method::POST).with(create_stream);
                     })
@@ -77,6 +80,13 @@ fn create() -> App<AppState> {
                     })
                     .resource("topics", |r| {
                         r.method(Method::POST).with(create_topic);
+                    })
+                )
+            )
+            .nested("topics", |topics| topics
+                .nested("{topic}", |topic| topic
+                    .resource("comments", |r| {
+                        r.method(Method::POST).with(create_comment);
                     })
                 )
             )

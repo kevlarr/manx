@@ -3,8 +3,8 @@ use actix_web::{Json, Path};
 use crate::Request;
 use crate::ApiResult;
 use crate::extractors::Credentials;
-use crate::models::{Topic, NewTopic};
-use crate::stores::{members, topics};
+use crate::models::{Comment, NewComment};
+use crate::stores::{members, comments};
 
 #[derive(Deserialize)]
 pub struct CreateParams {
@@ -13,7 +13,7 @@ pub struct CreateParams {
 
 #[derive(Serialize)]
 pub struct Created {
-    topic: Topic,
+    comment: Comment,
 }
 
 pub fn create(
@@ -21,12 +21,12 @@ pub fn create(
 ) -> ApiResult<Json<Created>>
 {
     let conn = &req.state().conn;
-    let stream_id = path.0;
+    let topic_id = path.0;
 
-    let member_id = members::id_from_stream(conn, cred.user.id, stream_id)?;
+    let member_id = members::id_from_topic(conn, cred.user.id, topic_id)?;
 
-    let new_topic = NewTopic::new(member_id, stream_id, params.raw.clone());
-    let topic = topics::create(conn, &new_topic)?;
+    let new_comment = NewComment::new(member_id, topic_id, params.raw.clone());
+    let comment = comments::create(conn, &new_comment)?;
 
-    Ok(Json(Created { topic }))
+    Ok(Json(Created { comment }))
 }

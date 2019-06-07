@@ -12,54 +12,65 @@ type Next = Parameters<NavigationGuard>[2];
  * Data models
  */
 
-interface Organization {
+interface Team {
   id: number;
-  creatorId: number;
-  shortId: string;
+  created: Date;
   title: string;
+  key: string;
 }
 
-interface NewOrganization {
+interface NewTeam {
   title: string;
-  userName: string;
+  username: string;
 }
 
-interface OrganizationUser {
+interface Member {
   id: number;
-  organizationId: number;
+  teamId: number;
+  created: Date;
   name: string;
 }
 
 interface Stream {
   id: number;
+  teamId: number;
+  memberId: number;
   parentId: number | null;
-  organizationId: number;
-  global: boolean;
-  name: string;
-  shortId: string;
+  created: Date;
+  title: string;
+  key: string;
 }
 
 interface NewStream {
-  organizationId: string;
-  name: string;
+  parentId: number | null;
+  title: string;
 }
 
 interface Topic {
   id: number;
+  memberId: number;
   streamId: number;
+  created: Date;
+  updated: Date;
   raw: string;
   rendered: string;
+  key: string;
 }
 
 interface NewTopic {
-  streamId: number;
   raw: string;
 }
 
 interface Comment {
-  // TODO
+  id: number;
+  memberId: number;
+  topicId: number;
+  created: Date;
+  updated: Date;
+  raw: string;
+  rendered: string;
 }
 
 interface NewComment {
-  // TODO
+  raw: string;
 }

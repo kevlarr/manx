@@ -10,8 +10,9 @@ pub mod encryption;
 pub mod error;
 pub mod extractors;
 pub mod handlers;
+pub mod markdown;
 pub mod models;
-pub mod store;
+pub mod stores;
 
 mod schema;
 

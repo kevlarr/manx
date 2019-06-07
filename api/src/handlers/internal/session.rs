@@ -4,7 +4,7 @@ use actix_web::middleware::session::RequestSession;
 use crate::{ApiResult, Request, Response};
 use crate::encryption;
 use crate::error::ApiError;
-use crate::store::users;
+use crate::stores::users;
 
 #[derive(Deserialize)]
 pub struct PostParams {
@@ -28,10 +28,9 @@ pub fn create((req, params): (Request, Json<PostParams>)) -> ApiResult<Response>
         return Err(ApiError::Unauthorized);
     }
 
-    req.session()
+    Ok(req.session()
         .set("user_id", &user.id)
-        .map(|_| Response::Ok().finish())
-        .map_err(ApiError::from)
+        .map(|_| Response::Ok().finish())?)
 }
 
 pub fn delete(req: Request) -> Response {

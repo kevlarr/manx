@@ -1,53 +1,66 @@
 table! {
-    organization_users (id) {
+    comments (id) {
         id -> Int4,
+        member_id -> Int4,
+        topic_id -> Int4,
         created -> Timestamptz,
-        name -> Text,
-        user_id -> Nullable<Int4>,
-        organization_id -> Int4,
-    }
-}
-
-table! {
-    organizations (id) {
-        id -> Int4,
-        created -> Timestamptz,
-        title -> Text,
-        uri_key -> Text,
-        user_id -> Nullable<Int4>,
-    }
-}
-
-table! {
-    stream_topics (id) {
-        id -> Int4,
-        created -> Timestamptz,
+        updated -> Timestamptz,
         raw -> Text,
         rendered -> Text,
-        organization_user_id -> Int4,
-        stream_id -> Int4,
     }
 }
 
 table! {
-    stream_users (id) {
+    members (id) {
         id -> Int4,
+        team_id -> Int4,
+        user_id -> Nullable<Int4>,
         created -> Timestamptz,
-        organization_user_id -> Int4,
+        name -> Text,
+    }
+}
+
+table! {
+    stream_permissions (id) {
+        id -> Int4,
+        member_id -> Int4,
         stream_id -> Int4,
+        created -> Timestamptz,
     }
 }
 
 table! {
     streams (id) {
         id -> Int4,
-        created -> Timestamptz,
-        name -> Text,
-        uri_key -> Text,
-        global -> Bool,
-        organization_id -> Int4,
-        organization_user_id -> Int4,
+        team_id -> Int4,
+        member_id -> Int4,
         parent_id -> Nullable<Int4>,
+        created -> Timestamptz,
+        title -> Text,
+        key -> Text,
+    }
+}
+
+table! {
+    teams (id) {
+        id -> Int4,
+        owner_id -> Int4,
+        created -> Timestamptz,
+        title -> Text,
+        key -> Text,
+    }
+}
+
+table! {
+    topics (id) {
+        id -> Int4,
+        member_id -> Int4,
+        stream_id -> Int4,
+        created -> Timestamptz,
+        updated -> Timestamptz,
+        raw -> Text,
+        rendered -> Text,
+        key -> Text,
     }
 }
 
@@ -60,21 +73,24 @@ table! {
     }
 }
 
-joinable!(organization_users -> organizations (organization_id));
-joinable!(organization_users -> users (user_id));
-joinable!(organizations -> users (user_id));
-joinable!(stream_topics -> organization_users (organization_user_id));
-joinable!(stream_topics -> streams (stream_id));
-joinable!(stream_users -> organization_users (organization_user_id));
-joinable!(stream_users -> streams (stream_id));
-joinable!(streams -> organization_users (organization_user_id));
-joinable!(streams -> organizations (organization_id));
+joinable!(comments -> members (member_id));
+joinable!(comments -> topics (topic_id));
+joinable!(members -> teams (team_id));
+joinable!(members -> users (user_id));
+joinable!(stream_permissions -> members (member_id));
+joinable!(stream_permissions -> streams (stream_id));
+joinable!(streams -> members (member_id));
+joinable!(streams -> teams (team_id));
+joinable!(teams -> users (owner_id));
+joinable!(topics -> members (member_id));
+joinable!(topics -> streams (stream_id));
 
 allow_tables_to_appear_in_same_query!(
-    organization_users,
-    organizations,
-    stream_topics,
-    stream_users,
+    comments,
+    members,
+    stream_permissions,
     streams,
+    teams,
+    topics,
     users,
 );

@@ -1,106 +1,111 @@
 import { action, observable } from "mobx";
 import Api, { ParsedResponse } from '@/lib/api';
 import {
-  Organization,
-  NewOrganization,
-  OrganizationUser,
+  Team,
+  NewTeam,
+  Member,
   Stream,
   Topic,
   NewTopic,
   Comment,
+  NewComment,
 } from '@/types';
 
 
 export class ApplicationRepo {
-  @observable organizations: OrganizationRepo[] = [];
+  @observable teams: TeamRepo[] = [];
 
-  @action.bound addOrganization(org: Organization): OrganizationRepo {
-    let repo = this.organizations.find(repo => repo.organization.id === org.id);
+  @action.bound addTeam(t: Team): TeamRepo {
+    let repo = this.teams.find(repo => repo.team.id === t.id);
 
     if (!repo) {
-      repo = new OrganizationRepo(org);
-      this.organizations.push(repo);
+      repo = new TeamRepo(t);
+      this.teams.push(repo);
     }
 
     return repo;
   }
 
-  @action.bound async loadOrganizations() {
-    const { body }: any = await Api.get('organizations');
+  @action.bound async loadTeams() {
+    const { body }: any = await Api.get('teams');
 
-    const repos = body.organizations.reduce((acc: object, org: Organization) => ({
+    const repos = body.teams.reduce((acc: object, t: Team) => ({
       ...acc,
-      [org.id]: this.addOrganization(org),
+      [t.id]: this.addTeam(t),
     }), {});
 
-    body.streams.forEach((stream: Stream) => (
-      repos[stream.organizationId].addStream(stream)
-    ));
+    body.members.forEach((m: Member) => repos[m.teamId].addMember(m));
 
-    body.organizationUsers.forEach((orgUser: OrganizationUser) => (
-      repos[orgUser.organizationId].addUser(orgUser)
-    ));
+    const streamRepos = body.streams.reduce((acc: object, s: Stream) => ({
+      ...acc,
+      [s.id]: repos[s.teamId].addStream(s),
+    }), {});
+
+    const topicRepos = body.topics.reduce((acc: object, t: Topic) => ({
+      ...acc,
+      [t.id]: streamRepos[t.streamId].addTopic(t),
+    }), {});
+
+    body.comments.forEach((c: Comment) => topicRepos[c.topicId].addComment(c));
   }
 
-  @action.bound async createOrganization({ title, userName }: NewOrganization): Promise<OrganizationRepo> {
-    const data = { organization: { title }, organizationUser: { name: userName } };
-    const { body }: any = await Api.post('organizations', data);
+  @action.bound async createTeam(nt: NewTeam): Promise<TeamRepo> {
+    const { body }: any = await Api.post('teams', nt);
+    const repo = this.addTeam(body.team);
 
-    const repo = this.addOrganization(body.organization);
-
-    repo.addUser(body.organizationUser);
+    repo.addMember(body.member);
     repo.addStream(body.stream);
 
     return repo;
   }
 
   @action.bound reset() {
-    this.organizations = [];
+    this.teams = [];
   }
 
-  getOrganization(shortId: string): OrganizationRepo | null {
-    return this.organizations.find(o => o.organization.shortId === shortId) || null;
+  getTeam(key: string): TeamRepo | null {
+    return this.teams.find(repo => repo.team.key === key) || null;
   }
 }
 
 
-export class OrganizationRepo {
-  constructor(org: Organization) {
-    this.organization = Object.freeze(org);
+export class TeamRepo {
+  constructor(t: Team) {
+    this.team = Object.freeze(t);
   }
 
-  @observable organization: Organization;
+  @observable team: Team;
+  @observable members: Member[] = [];
   @observable streams: StreamRepo[] = [];
-  @observable users: OrganizationUser[] = [];
 
-  @action.bound addStream(stream: Stream) {
-    let repo = this.streams.find(repo => repo.stream.id === stream.id);
+  @action.bound addMember(mem: Member): Member {
+    let member = this.members.find(m => m.id === mem.id);
+
+    if (!member) {
+      member = Object.freeze(mem);
+      this.members.push(member);
+    }
+
+    return member;
+  }
+
+  @action.bound addStream(s: Stream): StreamRepo {
+    let repo = this.streams.find(repo => repo.stream.id === s.id);
 
     if (!repo) {
-      repo = new StreamRepo(stream);
+      repo = new StreamRepo(s);
       this.streams.push(repo);
     }
 
     return repo;
   }
 
-  @action.bound addUser(user: OrganizationUser) {
-    let u = this.users.find(u => u.id === user.id);
-
-    if (!u) {
-      u = user;
-      this.users.push(u);
-    }
-
-    return u;
+  getStream(key: string): StreamRepo | null {
+    return this.streams.find(s => s.stream.key === key) || null;
   }
 
-  getStream(shortId: string): StreamRepo | null {
-    return this.streams.find(s => s.stream.shortId === shortId) || null;
-  }
-
-  getGlobalStream(): StreamRepo | null {
-    return this.streams.find(s => s.stream.global) || null;
+  getDefaultStream(): StreamRepo | null {
+    return this.streams.length ? this.streams[0] : null;
   }
 }
 
@@ -113,37 +118,48 @@ export class StreamRepo {
   @observable stream: Stream;
   @observable topics: TopicRepo[] = [];
 
-  @action.bound addTopic(topic: Topic) {
-    if (this.topics.find(repo => repo.topic.id === topic.id)) { return; }
+  @action.bound addTopic(t: Topic): TopicRepo {
+    let repo = this.topics.find(repo => repo.topic.id === t.id);
 
-    //this.topics = [...this.topics, new TopicRepo(topic)];
-    this.topics.push(new TopicRepo(topic));
+    if (!repo) {
+      repo = new TopicRepo(t);
+      this.topics.push(repo);
+    }
+
+    return repo;
   }
 
-  @action.bound async createTopic(newTopic: NewTopic) {
-    //const url = `streams/${newTopic.streamId}/topics`;
-    //const { body }: any = await Api.post(url, { topic: newTopic });
+  @action.bound async createTopic(nt: NewTopic): Promise<TopicRepo> {
+    const url = `streams/${this.stream.id}/topics`;
+    const { body }: any = await Api.post(url, nt);
 
-    this.addTopic({...newTopic, id: Number(new Date()), rendered: '' });
+    return this.addTopic(body.topic);
+  }
 
-    // FIXME
-    //return body;
+  getTopic(key: string): TopicRepo | null {
+    return this.topics.find(t => t.topic.key === key) || null;
   }
 }
 
 
 export class TopicRepo {
-  constructor(topic: Topic) {
-    this.topic = Object.freeze(topic);
+  constructor(t: Topic) {
+    this.topic = Object.freeze(t);
   }
 
   @observable topic: Topic;
   @observable comments: Comment[] = [];
 
-  //@action async addComment(comment: Comment) {
-    // FIXME: API call
-    // this._comments[comment.id] = Object.freeze(comment);
-  //}
+  @action.bound addComment(cmt: Comment) {
+    this.comments.push(Object.freeze(cmt));
+  }
+
+  @action.bound async createComment(nc: NewComment) {
+    const url = `topics/${this.topic.id}/comments`;
+    const { body }: any = await Api.post(url, nc);
+
+    return this.addComment(body.comment);
+  }
 }
 
 

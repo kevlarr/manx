@@ -4,7 +4,7 @@ use actix_web::middleware::session::RequestSession;
 use crate::{AppState, ApiResult};
 use crate::error::ApiError;
 use crate::models::User;
-use crate::store::users;
+use crate::stores::users;
 
 pub struct Credentials {
     pub user: User,

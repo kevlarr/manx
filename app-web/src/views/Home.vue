@@ -47,7 +47,7 @@ export default class extends Vue {
   }
 
   signIn(_resp: ParsedResponse) {
-    this.$router.push({ name: 'organizations' });
+    this.$router.push({ name: 'teams' });
   }
 }
 </script>
